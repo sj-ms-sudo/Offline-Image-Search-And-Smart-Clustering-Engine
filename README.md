@@ -1,4 +1,4 @@
-"# image-cluster-intelligence-engine" 
+"# Offline Image Search & Smart Clustering Engine (v0.6)" 
 Offline photo analysis and indexing system.
 
 Current Features (v0.1)
