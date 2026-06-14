@@ -1,4 +1,4 @@
-# Face Clustering Engine ⚡
+# Face Clustering Engine V0.8⚡
 
 A high-performance, local AI tool designed to organize unstructured photo libraries using advanced vector search and facial recognition.
 
