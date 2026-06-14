@@ -237,6 +237,23 @@ def show_cluster_table():
     for row in rows:
         print(row)
     conn.close()
+
+def get_image_count_from_database():
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute("SELECT COUNT(*) FROM images")
+    row = cursor.fetchone()
+    conn.close()
+    return row[0]
+
+def get_face_count_from_database():
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute("SELECT COUNT(*) FROM faces")
+    row = cursor.fetchone()
+    conn.close()
+    return row[0]
+
 if __name__ == "__main__":
     show_cluster_table()
 
