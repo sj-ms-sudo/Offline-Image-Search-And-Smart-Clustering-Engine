@@ -1,28 +1,34 @@
-from utils.path_utils import get_image_files
-from utils.image_utils import load_image
+
 from detector.detector import create_detector
-from detector.detector import detect_faces
-from utils.image_utils import draw_rectangle
-from utils.path_utils import create_output_path
-from utils.image_utils import save_image
+from utils.image_utils import create_index
+from utils.image_utils import find_matching_images
+from utils.image_utils import create_embeddings
+from backend.database import create_tables
+from utils.image_utils import create_clusters
+from utils.image_utils import show_clusters
+import faiss
 def main():
+    choice = int(input("1.Create Faiss index\n2.Load image to find matching faces\n3.Create embeddings\n4.Create database\n5.Create clusters\n6. Show clusters"))
     detector = create_detector()
-    path = "../photos"
-    images = get_image_files(path)
-    image_count = len(images)
-    for index ,image_path in enumerate(images,start=1):
-        print(f"[{index}/{image_count}] Processing {image_path.name}")
-        image = load_image(image_path)
-
-        faces = detect_faces(image,detector)
-
-        image = draw_rectangle(image,faces)
-
-        output_path = create_output_path(image_path)
-
-        save_image(image,output_path)
-
-        print(f"Saved {output_path}\n")
+    if choice ==1:
+        create_index()
+    elif choice ==2:
+        find_matching_images(detector,)
+    elif choice ==3:
+        try:
+            faiss_index = faiss.read_index("faces.index")
+        except:
+            print("Faiss index not found")
+            return
+        create_embeddings(detector,faiss_index)
+    elif choice ==4:
+        create_tables()
+    elif choice == 5:
+        create_clusters()
+    elif choice == 6:
+        show_clusters()
+    else:
+        print("Invalid choice")
 
 if __name__ == "__main__":
     main()

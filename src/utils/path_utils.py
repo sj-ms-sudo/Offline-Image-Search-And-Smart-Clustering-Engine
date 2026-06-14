@@ -1,4 +1,6 @@
 from pathlib import Path
+import os
+import numpy as np
 
 SUPPORTED_EXTENSIONS = {
     ".jpg",
@@ -28,3 +30,19 @@ def create_output_path(image_path):
     output_dir = Path("../output")
     output_dir.mkdir(exist_ok=True)
     return output_dir/f"{image_path.stem}_faces.jpg"
+
+def return_embeddings():
+    embeddings = []
+    paths = []
+    # Sort filenames numerically to ensure index matches database ID (1.npy, 2.npy...)
+    filenames = sorted(os.listdir("embeddings"), 
+                       key=lambda x: int(os.path.splitext(x)[0]) if x.endswith(".npy") else 0)
+    for filename in filenames:
+        if filename.endswith(".npy"):
+            file_path = os.path.join("embeddings", filename)
+            embedding = np.load(file_path)
+            embeddings.append(embedding)
+            paths.append(file_path)
+    
+    Embeddings = np.array(embeddings)
+    return Embeddings
