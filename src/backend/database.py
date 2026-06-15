@@ -3,6 +3,7 @@ from PIL import Image
 from pathlib import Path
 import os
 import numpy as np
+from collections import defaultdict
 BASE_DIR = Path(__file__).resolve().parent
 DB_PATH = BASE_DIR / "database.db"
 
@@ -16,7 +17,8 @@ def create_tables():
     conn = get_connection()
     cursor = conn.cursor()
     print("DB:", os.path.abspath(DB_PATH))
-    cursor.execute("""
+    try:
+        cursor.execute("""
         CREATE TABLE IF NOT EXISTS images (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             path TEXT NOT NULL UNIQUE,
@@ -25,9 +27,9 @@ def create_tables():
             height INTEGER,
             createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
-    """)
-
-    cursor.execute("""
+        """)
+    
+        cursor.execute("""
         CREATE TABLE IF NOT EXISTS faces (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             image_id INTEGER NOT NULL,
@@ -40,32 +42,36 @@ def create_tables():
                 REFERENCES images(id)
                 ON DELETE CASCADE
         )
-    """)
+        """)
 
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS embeddings (
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS embeddings (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             face_id INTEGER NOT NULL,
             embedding_path TEXT NOT NULL,
             FOREIGN KEY (face_id)
                 REFERENCES faces(id)
                 ON DELETE CASCADE
-        )
-    """)
+            )
+            """)
 
-    cursor.execute("""
-                   CREATE TABLE IF NOT EXISTS clusters (
-                   id INTEGER PRIMARY KEY AUTOINCREMENT,
-                   cluster_id INTEGER NOT NULL,
-                   image_path TEXT NOT NULL,
-                   x INTEGER,
-                   y INTEGER,
-                   width INTEGER,
-                   height INTEGER
-                   )""")
-    conn.commit()
-    conn.close()
-    print("Database initialized , tables created successfully")
+        cursor.execute("""
+                    CREATE TABLE IF NOT EXISTS clusters (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    cluster_id INTEGER NOT NULL,
+                    image_path TEXT NOT NULL,
+                    x INTEGER,
+                    y INTEGER,
+                    width INTEGER,
+                    height INTEGER
+                    )""")
+        conn.commit()
+        return "Database initialized , tables created successfully"
+    except Exception as e:
+        return f"Error creating database {e}"
+    finally:
+        conn.close()
+        
 def save_image_to_database(image):
     print("DB:", os.path.abspath(DB_PATH))
     if isinstance(image,tuple):
@@ -238,22 +244,54 @@ def show_cluster_table():
         print(row)
     conn.close()
 
-def get_image_count_from_database():
+def get_stats_from_database():
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
-    cursor.execute("SELECT COUNT(*) FROM images")
-    row = cursor.fetchone()
-    conn.close()
-    return row[0]
+    image_count = cursor.execute("SELECT COUNT (*) FROM images").fetchone()[0]
+    face_count = cursor.execute("SELECT COUNT (*) FROM faces").fetchone()[0]
+    cluster_count = cursor.execute("SELECT COUNT (*) FROM (SELECT DISTINCT cluster_id FROM clusters)").fetchone()[0]
+    indexed_vector_count = cursor.execute("SELECT COUNT (*) FROM clusters").fetchone()[0]
+    return{
+        "image_count":image_count,
+        "face_count":face_count,
+        "cluster_count":cluster_count,
+        "indexed_vector_count":indexed_vector_count
+    
+    }
 
-def get_face_count_from_database():
+def drop_database_tables():
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
-    cursor.execute("SELECT COUNT(*) FROM faces")
-    row = cursor.fetchone()
+    cursor.execute("DROP TABLE IF EXISTS images")
+    cursor.execute("DROP TABLE IF EXISTS faces")
+    cursor.execute("DROP TABLE IF EXISTS embeddings")
+    cursor.execute("DROP TABLE IF EXISTS clusters")
+    conn.commit()
     conn.close()
-    return row[0]
-
+    return
+def get_all_clusters_from_database():
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute("""
+    SELECT image_path, cluster_id
+    FROM (
+        SELECT
+            image_path,
+            cluster_id,
+            ROW_NUMBER() OVER (
+                PARTITION BY cluster_id
+                ORDER BY id
+            ) AS rn
+        FROM clusters
+    )
+    WHERE rn <= 4
+    """)
+    rows = cursor.fetchall()
+    conn.close()
+    clusters = defaultdict(list)
+    for image_path,cluster_id in rows:
+        clusters[cluster_id].append(image_path)
+    return dict(clusters)
 if __name__ == "__main__":
     show_cluster_table()
 

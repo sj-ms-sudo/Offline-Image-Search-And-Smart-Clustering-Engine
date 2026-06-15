@@ -1,34 +1,28 @@
 import { useState ,useEffect} from "react"
 import { Image, Users , LayoutGrid , Zap } from "lucide-react";
-export default function StatusCards(){
+export default function StatusCards({ refreshSignal }){
     const [imageCount, setImageCount] = useState(0);
     const [faceCount, setFaceCount] = useState(0);
+    const [clusterCount,setClusterCount] = useState(0);
+    const [indexedVectorCount,setIndexedVectorCount] = useState(0);
     useEffect(()=>{
-        async function fetchImageCount(){
+        async function getStats(){
             try{
                 const response = await fetch(
-                    `${import.meta.env.VITE_BACKEND_URL}/images/count`
+                    `${import.meta.env.VITE_BACKEND_URL}/stats`
                 );
                 const data = await response.json()
-                setImageCount(data.count);
+                setImageCount(data.image_count);
+                setFaceCount(data.face_count);
+                setClusterCount(data.cluster_count);
+                setIndexedVectorCount(data.indexed_vector_count);
             }catch(error){
-                console.error("Failed to fetch image count: ",error)
+                console.error("Error fetching stats",error)
             }
         }
-        async function fetchFaceCount(){
-            try{
-                const response = await fetch(
-                    `${import.meta.env.VITE_BACKEND_URL}/faces/count`
-                );
-                const data = await response.json()
-                setFaceCount(data.count);
-            }catch(error){
-                console.error("Failed to fetch face count: ",error)
-            }
-        }
-        fetchImageCount();
-        fetchFaceCount();
-    },[]);
+        getStats();
+    },[refreshSignal]);
+
     return(
         <section>
             <div className="flex justify-start p-8 m-8 max-w-5xl gap-8">
@@ -41,23 +35,23 @@ export default function StatusCards(){
                 </div>
                 <div>
                     <StatusCard 
-                    logo = {<Users/>}
+                    logo = {<Users className="text-blue-800/80"/>}
                     title = "FACES DETECTED"
                     count = {faceCount}
                 />
                 </div>
                 <div>
                     <StatusCard 
-                    logo = {<LayoutGrid/>}
+                    logo = {<LayoutGrid className="text-blue-800/80"/>}
                     title = "AI CLUSTERS"
-                    count = {imageCount}
+                    count = {clusterCount}
                 />
                 </div>
                 <div>
                     <StatusCard 
-                    logo = {<Zap/>}
+                    logo = {<Zap className="text-blue-800/80"/>}
                     title = "VECTOR INDEXED"
-                    count = {imageCount}
+                    count = {indexedVectorCount}
                 />
                 </div>
             </div>

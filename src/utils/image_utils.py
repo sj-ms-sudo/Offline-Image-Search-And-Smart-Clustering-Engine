@@ -15,6 +15,17 @@ from backend.database import get_image_path_by_embeddings
 from backend.database import add_cluster_to_database
 from backend.database import get_images_by_cluster
 from backend.database import clear_clusters
+import shutil
+from fastapi import UploadFile
+
+embedding_progress = {"current": 0, "total": 0, "status": "idle"}
+cluster_progress = {"current":0 , "total":0, "status":"idle"}
+
+def get_cluster_progress():
+    return cluster_progress
+
+def get_embedding_progress():
+    return embedding_progress
 
 def load_image(path):
     return cv.imread(path)
@@ -36,10 +47,13 @@ def save_embeddings(face,face_id):
     return EMBEDDINGS_FILE
 
 def create_index():
-    dimension = 512
-    index = faiss.IndexFlatL2(dimension)
-    faiss.write_index(index,"faces.index")
-    print("Faiss index created")
+    try:
+        dimension = 512
+        index = faiss.IndexFlatL2(dimension)
+        faiss.write_index(index,"faces.index")
+        return "Faiss index created"
+    except Exception as e:
+        return f"Faiss index creation failed : {e}"
 def add_embeddings_to_faiss(index,target_embedding):
 
     faiss.normalize_L2(target_embedding.reshape(1,-1))
@@ -70,11 +84,17 @@ def find_matching_images(detector):
         cv.destroyAllWindows()
 
 def create_embeddings(detector,faiss_index):
-
+    global embedding_progress
     path = "../photos"
     images = get_image_files(path)
     image_count = len(images)
+    
+    embedding_progress["total"] = image_count
+    embedding_progress["current"] = 0
+    embedding_progress["status"] = "processing"
+
     for index,image_path in enumerate(images,start=1):
+        embedding_progress["current"] = index
         print(f"[{index}/{image_count}] Processing {image_path.name}")
         image = load_image(image_path)
         image_id = save_image_to_database(image_path)
@@ -92,26 +112,33 @@ def create_embeddings(detector,faiss_index):
         output_path = create_output_path(image_path)
         save_image(image,output_path)
         print(f"Saved {output_path}\n")
-        faiss.write_index(faiss_index,"faces.index")
-        print(
+
+    faiss.write_index(faiss_index,"faces.index")
+    print(
         f"FAISS index saved with "
         f"{faiss_index.ntotal} vectors"
     )
-        print("Embeddings created")
+    embedding_progress["status"] = "completed"
+    return "FAISS index created"
 
 def create_clusters():
-    clear_clusters()
+    global cluster_progress
     embeddings= return_embeddings()
+    cluster_progress["total"] = embeddings.shape[0]
+    cluster_progress["current"] = 0
+    cluster_progress["status"] = "processing"
     db = DBSCAN(eps=0.5 , min_samples=3,metric="cosine")
     labels = db.fit_predict(embeddings)
     for index , label in enumerate(labels):
+        cluster_progress["current"] = index
         if label == -1:
             continue
         face_data = get_image_path_by_embeddings(index)
         if face_data is None:
             continue
         add_cluster_to_database(label, face_data)
-    print("Cluster created")
+    cluster_progress["status"] = "completed"
+    return "Cluster created"
 
 def show_clusters():
     cluster_id = int(input("Enter the cluster id: "))
@@ -130,3 +157,7 @@ def show_clusters():
             cv.imshow(f"Cluster {cluster_id}", image)
             cv.waitKey(0)
     cv.destroyAllWindows()
+
+def save_uploaded_file(file: UploadFile, file_path: Path) -> None:
+    with open(file_path, "wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)

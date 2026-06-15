@@ -4,7 +4,7 @@ export default function Hero(){
             <div className = "flex items-center p-8 m-8 max-w-4xl">
                 <div className = "flex items-center gap-3 px-3 py-1.5 rounded-lg border border-violet-500/30 bg-violet-500/10 shadow-[0_0_15px_rgba(142,94,255,0.15)]">
                     <span className="text-md font-bold text-violet-400 uppercase tracking-widest">
-                        Local AI Engine v0.8
+                        Local AI Engine v0.9
                     </span>
                 </div>
             </div>
