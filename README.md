@@ -1,46 +1,52 @@
-"# Offline Image Search & Smart Clustering Engine (v0.6)" 
-Offline photo analysis and indexing system.
+# Face Clustering Engine V0.8⚡
 
-Current Features (v0.7)
-- **Face Detection & Analysis**: High-accuracy face detection using InsightFace.
-- **Vector Search**: Blazing fast similarity search powered by Faiss (FlatL2).
-- **Clustering**: Automatic person grouping using DBSCAN with cosine metrics.
-- **Persistent Storage**: Full SQLite backend for images, faces, embeddings, and clusters.
-- **Path Intelligence**: Automated absolute path resolution and numerical embedding synchronization.
-- **Visualization**: Integrated OpenCV display showing cluster results with localized bounding boxes.
-- **Offline First**: Entirely local processing with no external API calls.
+A high-performance, local AI tool designed to organize unstructured photo libraries using advanced vector search and facial recognition.
 
+> **Status: Work in Progress (WIP)**. The core engine and dashboard UI are currently under active development.
 
-Tech Stack
-- **Language**: Python 3.x
-- **Vision**: InsightFace, OpenCV
-- **Database**: SQLite3
-- **Vector Search**: Faiss
-- **Machine Learning**: Scikit-learn (DBSCAN), NumPy
+## 🚀 Features
+- **Local AI Processing**: Privacy-focused analysis that never leaves your machine.
+- **Vector Indexing**: Fast similarity search for large image datasets.
+- **Face Detection**: Automated clustering of individuals across thousands of photos.
+- **Real-time Dashboard**: Live status of processed images and detected clusters.
 
+## 🛠️ Tech Stack
+- **Frontend**: React 19, Vite, Tailwind CSS v4, Lucide Icons.
+- **Backend**: Python (FastAPI/Flask) or Node.js.
+- **AI Models**: Local vector embeddings and face detection.
 
-Project Goal
+## 📁 Project Structure
+```text
+├── frontend/    # React Dashboard (Vite)
+└── backend/     # AI Processing Engine & API
+```
 
-- Folder scanning
-- Face embeddings
-- Similarity search
-- Clustering
-- Semantic search
+## ⚙️ Setup Instructions
 
+### Prerequisites
+- Node.js (v20+)
+- Python 3.10+ (for Backend)
 
-Installation
-pip install -r requirements.txt
-Usage
-python src/main.py
-Roadmap
-v0.1
-Face detection
-v0.2
-Folder scanning
-Metadata storage
-v0.3
-Face embeddings
-v0.4
-Similarity search
-v0.5
-Clustering
+### Frontend Setup
+1. Navigate to the frontend directory:
+   ```bash
+   cd frontend
+   ```
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+3. Create a `.env` file and set your backend URL:
+   ```text
+   VITE_BACKEND_URL=http://localhost:8000
+   ```
+4. Start the development server:
+   ```bash
+   npm run dev
+   ```
+
+## 📝 Roadmap
+- [ ] Complete Status Card integration with live API.
+- [ ] Implement image upload and batch processing.
+- [ ] Add Cluster Visualization view.
+- [ ] Support for exported JSON metadata.

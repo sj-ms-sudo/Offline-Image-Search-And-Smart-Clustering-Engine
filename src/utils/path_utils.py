@@ -1,7 +1,8 @@
 from pathlib import Path
 import os
+import shutil
 import numpy as np
-
+from backend.database import drop_database_tables
 SUPPORTED_EXTENSIONS = {
     ".jpg",
     ".png",
@@ -46,3 +47,21 @@ def return_embeddings():
     
     Embeddings = np.array(embeddings)
     return Embeddings
+
+def clear_system_data():
+
+    from backend.database import DB_PATH
+    
+    dirs = [Path("../photos"), Path("../output"), Path("embeddings")]
+    for d in dirs:
+        if d.exists() and d.is_dir():
+            shutil.rmtree(d)
+            d.mkdir(parents=True, exist_ok=True)
+            print(f"Cleared directory: {d}")
+
+    files = [Path("faces.index")]
+    for f in files:
+        if f.exists() and f.is_file():
+            f.unlink()
+            print(f"Deleted file: {f}")
+    drop_database_tables()

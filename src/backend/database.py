@@ -273,7 +273,7 @@ def get_all_clusters_from_database():
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
     cursor.execute("""
-    SELECT UNIQUE image_path, cluster_id
+    SELECT image_path, cluster_id
     FROM (
         SELECT
             image_path,
