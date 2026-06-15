@@ -1,4 +1,4 @@
-# Face Clustering Engine V0.8⚡
+# Face Clustering Engine V0.9 ⚡
 
 A high-performance, local AI tool designed to organize unstructured photo libraries using advanced vector search and facial recognition.
 
@@ -23,11 +23,11 @@ A high-performance, local AI tool designed to organize unstructured photo librar
 
 ## ⚙️ Setup Instructions
 
-### Prerequisites
+### 📋 Prerequisites
 - Node.js (v20+)
 - Python 3.10+ (for Backend)
 
-### Frontend Setup
+### 💻 Frontend Setup
 1. Navigate to the frontend directory:
    ```bash
    cd frontend
@@ -45,8 +45,33 @@ A high-performance, local AI tool designed to organize unstructured photo librar
    npm run dev
    ```
 
+### ⚙️ Backend Setup
+1. Navigate to the backend directory:
+   ```bash
+   cd backend
+   ```
+2. Create a virtual environment:
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # On Windows use: venv\Scripts\activate
+   ```
+3. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+4. Start the API server (FastAPI example):
+   ```bash
+   uvicorn main:app --reload
+   ```
+
 ## 📝 Roadmap
 - [ ] Complete Status Card integration with live API.
 - [ ] Implement image upload and batch processing.
 - [ ] Add Cluster Visualization view.
 - [ ] Support for exported JSON metadata.
+
+## 🤝 Contributing
+Contributions are welcome! Please feel free to submit a Pull Request or open an issue for feature requests.
+
+## 📄 License
+This project is licensed under the MIT License - see the LICENSE file for details.
