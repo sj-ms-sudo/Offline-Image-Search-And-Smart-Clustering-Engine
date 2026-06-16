@@ -7,6 +7,6 @@ EMBEDDINGS_DIR = BASE_DIR / "embeddings"
 FAISS_INDEX_PATH = BASE_DIR / "faces.index"
 EMBEDDING_DIM = 512
 
-ALLOWED_ORIGINS = ["http://localhost:5173","https://offline-image-search-and-smart-clustering-engine-12721sqx5.vercel.app"]
+ALLOWED_ORIGINS = ["http://localhost:5173","https://offline-image-search-and-smart-clustering-engine-12721sqx5.vercel.app","https://offline-image-search-and-smart-clus-puce.vercel.app"]
 
 PHOTOS_DIR.mkdir(exist_ok=True, parents=True)

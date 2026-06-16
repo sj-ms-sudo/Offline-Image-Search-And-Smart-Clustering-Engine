@@ -1,4 +1,4 @@
-# Face Clustering Engine V0.9 ⚡
+# Face Clustering Engine V0.10 ⚡
 
 A high-performance, local AI tool designed to organize unstructured photo libraries using advanced vector search and facial recognition.
 
@@ -9,6 +9,11 @@ A high-performance, local AI tool designed to organize unstructured photo librar
 - **Vector Indexing**: Fast similarity search for large image datasets.
 - **Face Detection**: Automated clustering of individuals across thousands of photos.
 - **Real-time Dashboard**: Live status of processed images and detected clusters.
+
+## ✨ V0.10 Updates (Latest Name Change)
+This release marks a significant step forward, officially renaming the project to "Face Clustering Engine" to better reflect its core functionality. Alongside this branding update, V0.10 includes general improvements to the core engine and dashboard, enhancing overall stability and user experience. It also introduces the **Face Renaming** feature, allowing users to label and rename detected face clusters for better organization.
+
+
 
 ## 🛠️ Tech Stack
 - **Frontend**: React 19, Vite, Tailwind CSS v4, Lucide Icons.
