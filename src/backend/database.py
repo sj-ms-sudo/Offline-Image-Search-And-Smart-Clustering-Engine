@@ -59,6 +59,7 @@ def create_tables():
                     CREATE TABLE IF NOT EXISTS clusters (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     cluster_id INTEGER NOT NULL,
+                    cluster_name TEXT,
                     image_path TEXT NOT NULL,
                     x INTEGER,
                     y INTEGER,
@@ -286,12 +287,29 @@ def get_all_clusters_from_database():
     )
     WHERE rn <= 4
     """)
-    rows = cursor.fetchall()
+    cluster_rows = cursor.fetchall()
+    cluster_info = cursor.execute("SELECT cluster_name,cluster_id,COUNT (*) FROM clusters GROUP BY cluster_id").fetchall()
     conn.close()
     clusters = defaultdict(list)
-    for image_path,cluster_id in rows:
+    for image_path,cluster_id in cluster_rows:
         clusters[cluster_id].append(image_path)
-    return dict(clusters)
+    return {
+    "clusters": clusters,
+    "cluster_info": {
+        cluster_id: {
+            "name": cluster_name,
+            "count": count
+        }
+        for cluster_name, cluster_id, count in cluster_info
+    }
+}
+
+def update_name_in_cluster(cluster_id,name):
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute("UPDATE clusters SET cluster_name = ? WHERE cluster_id = ?",(name,cluster_id))
+    conn.commit()
+    conn.close()
 if __name__ == "__main__":
     show_cluster_table()
 

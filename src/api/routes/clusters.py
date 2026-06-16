@@ -1,9 +1,13 @@
 from fastapi import APIRouter, BackgroundTasks
+from pydantic import BaseModel
 from services.pipeline_service import (
     run_clustering_pipeline,
     get_cluster_progress,
 )
-from backend.database import get_all_clusters_from_database
+from backend.database import get_all_clusters_from_database, update_name_in_cluster
+class ClusterRenameRequest(BaseModel):
+    cluster_id:int
+    name:str
 
 router = APIRouter()
 
@@ -22,3 +26,9 @@ def get_cluster_status():
 @router.get("/clusters/all")
 def get_all_clusters():
     return get_all_clusters_from_database()
+
+@router.patch("/clusters/editName")
+def edit_cluster_name(data:ClusterRenameRequest):
+    cluster_id = data.cluster_id
+    name = data.name
+    update_name_in_cluster(cluster_id,name)
