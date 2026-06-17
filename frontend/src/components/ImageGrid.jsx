@@ -1,11 +1,12 @@
-import { GalleryHorizontal, Pencil, Check, X } from "lucide-react";
+import { GalleryHorizontal, Pencil, Check, X, Link, SquareArrowOutUpRight } from "lucide-react";
 import { useEffect, useState } from "react";
-
+import { useNavigate } from "react-router-dom";
 export default function ImageGrid({ refreshSignal }) {
   const [clusters, setClusters] = useState({});
   const [clusterInfo, setClusterInfo] = useState({});
   const [editingCluster, setEditingCluster] = useState(null);
   const [editedName, setEditedName] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     async function fetchClusters() {
@@ -27,7 +28,7 @@ export default function ImageGrid({ refreshSignal }) {
   }, [refreshSignal]);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 p-8 m-8 max-w-7xl">
       <div>
         <h2 className="flex items-center gap-2 text-xl font-semibold mb-2">
           <GalleryHorizontal className="w-5 h-5" />
@@ -43,10 +44,13 @@ export default function ImageGrid({ refreshSignal }) {
         {Object.entries(clusters).map(([clusterId, images]) => (
           <div
             key={clusterId}
-            className="rounded-xl border border-zinc-800 bg-zinc-900 overflow-hidden"
+            className="group relative rounded-xl border border-zinc-800 bg-zinc-900 overflow-hidden"
           >
+            {/* Overlay button */}
+            <div className = "relative">
+              
             {/* Image Grid */}
-            <div className="grid grid-cols-2 gap-1 p-2">
+            <div className="grid grid-cols-2 gap-1 p-2 transition-all duration-300 blur-none brightness-100 group-hover:blur-xs group-hover:brightness-50">
               {images.slice(0, 4).map((img, index) => {
                 const filename = img.split("\\").pop();
                 const imageUrl = `${import.meta.env.VITE_BACKEND_URL}/images/${filename}`;
@@ -60,6 +64,15 @@ export default function ImageGrid({ refreshSignal }) {
                   />
                 );
               })}
+            </div>
+            <div className = "absolute inset-0 items-center justify-center  flex flex-col opacity-0 group-hover:opacity-100 z-20 transition-opacity duration-400">
+              <button 
+                onClick = {()=>navigate(`/cluster/${clusterId}`)}
+                className="flex  gap-4 w-fit bg-blue-600 px-8 py-2 rounded-xl cursor-pointer"
+              >
+                <SquareArrowOutUpRight className="w-5 h-5"/> <span>Open Cluster</span>
+              </button>
+              </div>
             </div>
 
             {/* Footer */}

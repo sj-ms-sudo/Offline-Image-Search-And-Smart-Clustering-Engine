@@ -223,10 +223,17 @@ def add_cluster_to_database(cluster_id, face_data):
 def get_images_by_cluster(cluster_id):
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
-    cursor.execute("SELECT image_path, x, y, width, height FROM clusters WHERE cluster_id = ?", (cluster_id,))
-    rows = cursor.fetchall()
+    cursor.execute("SELECT image_path FROM clusters WHERE cluster_id = ?", (cluster_id,))
+    image_paths = cursor.fetchall()
+    cursor.execute("SELECT cluster_name FROM clusters WHERE cluster_id = ?",(cluster_id,))
+    cluster_name = cursor.fetchone()[0]
+    cluster_count = cursor.execute("SELECT COUNT (*) FROM clusters WHERE cluster_id = ?",(cluster_id,)).fetchone()[0]
     conn.close()
-    return rows
+    return {
+        "cluster_name" : cluster_name,
+        "cluster_count" : cluster_count,
+        "image_paths" : [path[0] for path in image_paths]
+    }
 
 def clear_clusters():
     conn = sqlite3.connect(DB_PATH)
