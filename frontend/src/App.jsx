@@ -1,24 +1,17 @@
-import { useState } from "react";
-import Navbar from "./components/Navbar";
-import Hero from "./components/Hero";
-import CTA from "./components/CTA";
-import StatusCards from "./components/StatusCards";
-import PipeLine from "./components/PipeLine";
-import ImageGrid from "./components/ImageGrid";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-export default function App(){
-  const [refreshSignal, setRefreshSignal] = useState(0);
+import HomePage from "./pages/HomePage";
+import ClusterPage from "./pages/ClusterPage";
 
-  const triggerRefresh = () => setRefreshSignal(prev => prev + 1);
-
+export default function App() {
   return (
-    <main className="min-h-screen w-full bg-black text-white">
-      <Navbar/>
-      <Hero/>
-      <CTA/>
-      <StatusCards refreshSignal={refreshSignal}/>
-      <PipeLine onTaskComplete={triggerRefresh}/>
-      <ImageGrid refreshSignal={refreshSignal}/>
-    </main>
-  )
+    <BrowserRouter>
+      <main className="min-h-screen w-full">
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path = "/cluster/:clusterId" element={<ClusterPage/>}/>
+        </Routes>
+      </main>
+    </BrowserRouter>
+  );
 }
